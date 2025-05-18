@@ -3,133 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <title>ELYA Private | Encrypted Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       background-color: #121212;
       color: white;
       font-family: Arial, sans-serif;
       padding: 20px;
-      position: relative;
-      min-height: 100vh;
       box-sizing: border-box;
     }
+
     h1 {
       text-align: center;
-      font-size: 28px;
-      margin-bottom: 30px;
+      font-size: 24px;
+      margin-bottom: 25px;
     }
+
     input, textarea, button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 10px;
       font-size: 18px;
       border-radius: 5px;
       border: none;
+      box-sizing: border-box;
     }
+
     button {
       background-color: #333;
       color: white;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #555;
     }
-    #qrcode {
-      margin-top: 20px;
-      text-align: center;
+
+    textarea {
+      resize: none;
+      height: 100px;
     }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
     footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #121212;
+      margin-top: 50px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      box-sizing: border-box;
+      flex-direction: column;
+      align-items: flex-end;
       border-top: 1px solid #333;
+      padding-top: 10px;
     }
+
     .signature {
       font-size: 14px;
       color: #aaa;
+      margin-bottom: 5px;
     }
+
     .social-links a {
       color: #00bcd4;
       margin-left: 10px;
       text-decoration: none;
       font-size: 16px;
     }
+
     .social-links a:hover {
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
+
   <h1>ELYA Private | Encrypted Chat Website</h1>
 
-  <label>نص عربي لتحويله إلى أرقام:</label>
-  <input id="arabicInput" type="text" placeholder="أدخل النص بالعربية">
-  <button onclick="encode()">تحويل إلى أرقام</button>
-  <textarea id="encodedOutput" readonly placeholder="سيظهر هنا الرقم المشفر"></textarea>
-  <button onclick="generateQR()">توليد رمز QR</button>
-  <button onclick="downloadQR()">تنزيل QR كصورة</button>
-  <div id="qrcode"></div>
+  <div class="section">
+    <label>نص عربي لتحويله إلى أرقام:</label>
+    <input id="arabicInput" type="text" placeholder="اكتب هنا">
+    <button onclick="encode()">تحويل إلى أرقام</button>
+    <button onclick="copyEncoded()">نسخ الأرقام</button>
+    <textarea id="encodedOutput" readonly placeholder="النتيجة بالأرقام ستظهر هنا"></textarea>
+  </div>
 
-  <label>أرقام (مفصولة بمسافة أو فاصلة) لتحويلها إلى نص:</label>
-  <input id="numberInput" type="text" placeholder="مثال: 1 2 3 أو 1,2,3">
-  <button onclick="decode()">تحويل إلى نص</button>
-  <textarea id="decodedOutput" readonly placeholder="سيظهر هنا النص المفسر"></textarea>
-
-  <!-- QR Code Library -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
-  <script>
-    const alphabet = ['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
-
-    function encode() {
-      const text = document.getElementById("arabicInput").value;
-      let result = [];
-      for (let char of text) {
-        let index = alphabet.indexOf(char);
-        result.push(index !== -1 ? index + 1 : '?');
-      }
-      document.getElementById("encodedOutput").value = result.join(' ');
-    }
-
-    function decode() {
-      const numbers = document.getElementById("numberInput").value.split(/[\s,]+/);
-      let result = '';
-      for (let num of numbers) {
-        let index = parseInt(num) - 1;
-        result += alphabet[index] || '?';
-      }
-      document.getElementById("decodedOutput").value = result;
-    }
-
-    function generateQR() {
-      const encodedText = document.getElementById("encodedOutput").value;
-      const qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = '';
-      QRCode.toCanvas(encodedText, { width: 200 }, function (err, canvas) {
-        if (err) console.error(err);
-        qrContainer.appendChild(canvas);
-        canvas.id = "qrCanvas";
-      });
-    }
-
-    function downloadQR() {
-      const canvas = document.getElementById("qrCanvas");
-      if (!canvas) {
-        alert("يرجى توليد رمز QR أولاً.");
-        return;
-      }
-      const link = document.createElement('a');
-      link.download = 'qrcode.png';
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    }
-  </script>
+  <div class="section">
+    <label>أرقام لتحويلها إلى نص عربي:</label>
+    <input id="numberInput" type="text" placeholder="مثال: 1 2 3 أو 1,2,3">
+    <button onclick="decode()">تحويل إلى نص</button>
+    <textarea id="decodedOutput" readonly placeholder="النص العربي سيظهر هنا"></textarea>
+  </div>
 
   <footer>
     <div class="signature">لقد تمت برمجة هذا الموقع بواسطة Ali_Shams_313</div>
@@ -138,5 +101,37 @@
       <a href="https://www.instagram.com/elya_m_313/profilecard/?igsh=YmU2aTVxNHhhdjJt" target="_blank">Instagram</a>
     </div>
   </footer>
+
+  <script>
+    const alphabet = ['ا','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
+
+    function encode() {
+      const text = document.getElementById("arabicInput").value.trim();
+      let result = [];
+      for (let char of text) {
+        let index = alphabet.indexOf(char);
+        result.push(index !== -1 ? index + 1 : '?');
+      }
+      document.getElementById("encodedOutput").value = result.join(' ');
+    }
+
+    function copyEncoded() {
+      const output = document.getElementById("encodedOutput").value.replace(/\s+/g, ' ').trim();
+      navigator.clipboard.writeText(output).then(() => {
+        alert("تم نسخ الأرقام بنجاح!");
+      });
+    }
+
+    function decode() {
+      const numbers = document.getElementById("numberInput").value.trim().split(/[\s,]+/);
+      let result = '';
+      for (let num of numbers) {
+        let index = parseInt(num) - 1;
+        result += alphabet[index] || '?';
+      }
+      document.getElementById("decodedOutput").value = result;
+    }
+  </script>
+
 </body>
 </html>
